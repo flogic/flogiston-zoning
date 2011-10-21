@@ -17,4 +17,18 @@ describe AbstractPage do
       @abstract_page.site.should == site
     end
   end
+
+  describe 'validations' do
+    it 'should error on duplicate handles for the same site' do
+      obj = AbstractPage.generate!(:site => Site.generate!)
+      dup = AbstractPage.generate( :site => obj.site, :handle => obj.handle)
+      dup.errors.should be_invalid(:handle)
+    end
+
+    it 'should allow the same handle for a different site' do
+      obj = AbstractPage.generate!(:site => Site.generate!)
+      dup = AbstractPage.generate( :site => Site.generate!, :handle => obj.handle)
+      dup.errors.should_not be_invalid(:handle)
+    end
+  end
 end

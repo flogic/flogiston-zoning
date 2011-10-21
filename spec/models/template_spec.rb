@@ -17,4 +17,18 @@ describe Template do
       @template.site.should == site
     end
   end
+
+  describe 'validations' do
+    it 'should error on duplicate handles for the same site' do
+      obj = Template.generate!(:site => Site.generate!)
+      dup = Template.generate( :site => obj.site, :handle => obj.handle)
+      dup.errors.should be_invalid(:handle)
+    end
+
+    it 'should allow the same handle for a different site' do
+      obj = Template.generate!(:site => Site.generate!)
+      dup = Template.generate( :site => Site.generate!, :handle => obj.handle)
+      dup.errors.should_not be_invalid(:handle)
+    end
+  end
 end

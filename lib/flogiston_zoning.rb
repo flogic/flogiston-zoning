@@ -25,6 +25,16 @@ module Flogiston::Zoning
       end
       #####
       validates_uniqueness_of :handle, :scope => :site_id
+
+      def initialize_with_site_id(attributes = nil)
+        if ActiveRecord::Base.current_site
+          attributes ||= {}
+          [:site, :site_id].each { |attr|  attributes.delete(attr) }
+          attributes[:site_id] = ActiveRecord::Base.current_site.id
+        end
+        initialize_without_site_id(attributes)
+      end
+      alias_method_chain :initialize, :site_id
     end
   end
 end

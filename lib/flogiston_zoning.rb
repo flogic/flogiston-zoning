@@ -35,6 +35,9 @@ module Flogiston::Zoning
         initialize_without_site_id(attributes)
       end
       alias_method_chain :initialize, :site_id
+
+      scope_hash = Hash.new { |_,k|  ActiveRecord::Base.current_site && k == :conditions ? { :site_id => ActiveRecord::Base.current_site.id } : nil }
+      default_scope scope_hash
     end
   end
 end

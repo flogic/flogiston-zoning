@@ -85,5 +85,72 @@ describe Asset do
         end
       end
     end
+
+    describe 'finding' do
+      before do
+        Asset.delete_all
+        Site.delete_all
+
+        @sites = Array.new(3) { Site.generate! }
+        @sites.each { |s|  2.times { Asset.generate!(:site => s) } }
+        @things = Asset.all
+      end
+
+      describe 'when current site is set' do
+        before do
+          ActiveRecord::Base.current_site = @sites.first
+        end
+
+        after do
+          ActiveRecord::Base.current_site = nil
+        end
+
+        it 'should return stored objects for the current site' do
+          Asset.all.sort_by(&:id).should == @things.first(2).sort_by(&:id)
+        end
+
+        it 'should return the right number of stored objects for the current site' do
+          Asset.all.length.should == 2
+        end
+
+        it 'should count stored objects for the current site' do
+          Asset.count.should == 2
+        end
+
+        it 'should take extra conditions' do
+          Asset.all(:conditions => { :handle => @things[1].handle }).should == [@things[1]]
+        end
+
+        it 'should take extra conditions when counting' do
+          Asset.count(:conditions => { :handle => @things[1].handle }).should == 1
+        end
+      end
+
+      describe 'when current site is not set' do
+        before do
+          ActiveRecord::Base.current_site = nil
+        end
+
+        it 'should return stored objects' do
+          Asset.all.sort_by(&:id).should == @things.sort_by(&:id)
+        end
+
+        it 'should return the right number of stored objects' do
+          Asset.all.length.should == 3*2
+        end
+
+        it 'should count all stored objects' do
+          Asset.count.should == 3*2
+        end
+
+        it 'should take extra conditions' do
+          Asset.all(:conditions => { :handle => @things[1].handle }).should == [@things[1]]
+        end
+
+        it 'should take extra conditions when counting' do
+          Asset.count(:conditions => { :handle => @things[1].handle }).should == 1
+        end
+      end
+    end
   end
 end

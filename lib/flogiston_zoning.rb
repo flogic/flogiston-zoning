@@ -44,12 +44,19 @@ module Flogiston::Zoning
   module Controller
     def self.extended(b)
       b.send(:class_eval) do
+        before_filter :fail_unless_current_site_is_known
+
         def current_site
           @current_site ||= Site.for_domain(request.host)
         end
         helper_method :current_site
 
-        before_filter :current_site
+
+        private
+
+        def fail_unless_current_site_is_known
+          raise ActiveRecord::RecordNotFound unless current_site
+        end
       end
     end
   end

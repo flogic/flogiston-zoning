@@ -23,4 +23,9 @@ describe ApplicationController, 'setting the current site' do
     get :site_test
     controller.current_site.should == domain.site
   end
+
+  it 'should fail if the current site is not known' do
+    @request.host = 'somecompletelyunknowndomain.biz'
+    lambda { get :site_test }.should raise_error
+  end
 end

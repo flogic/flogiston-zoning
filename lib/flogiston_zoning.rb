@@ -40,4 +40,19 @@ module Flogiston::Zoning
       default_scope scope_hash
     end
   end
+
+  module Controller
+    def self.extended(b)
+      b.send(:class_eval) do
+        def current_site
+          @current_site ||= Site.for_domain(request.host)
+        end
+        helper_method :current_site
+
+        before_filter :current_site
+      end
+    end
+  end
 end
+
+ApplicationController.extend Flogiston::Zoning::Controller

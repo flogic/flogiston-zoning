@@ -46,7 +46,7 @@ describe Site do
       dup.errors.should be_invalid(:name)
     end
 
-    it 'should require a name' do
+    it 'should require a handle' do
       site = Site.new(:handle => nil)
       site.valid?
       site.errors.should be_invalid(:handle)

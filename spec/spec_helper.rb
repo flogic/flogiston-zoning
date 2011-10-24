@@ -5,6 +5,8 @@ require File.expand_path(File.dirname(__FILE__) + "/../../../../config/environme
 require 'spec/autorun'
 require 'spec/rails'
 
+Dir[File.join(File.dirname(__FILE__), *%w[shared *])].select { |f|  File.file?(f) }.each { |f|  require f }
+
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these
   # lines, delete config/database.yml and disable :active_record

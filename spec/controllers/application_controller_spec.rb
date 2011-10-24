@@ -28,4 +28,11 @@ describe ApplicationController, 'setting the current site' do
     @request.host = 'somecompletelyunknowndomain.biz'
     lambda { get :site_test }.should raise_error
   end
+
+  it 'should register the current site with AR' do
+    domain = Domain.generate!
+    @request.host = domain.name
+    get :site_test
+    ActiveRecord::Base.current_site.should == domain.site
+  end
 end

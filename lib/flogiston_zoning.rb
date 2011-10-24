@@ -40,4 +40,31 @@ module Flogiston::Zoning
       default_scope scope_hash
     end
   end
+
+  module Controller
+    def self.extended(b)
+      b.send(:class_eval) do
+        before_filter :fail_unless_current_site_is_known
+        before_filter :register_current_site_with_activerecord
+
+        def current_site
+          @current_site ||= Site.for_domain(request.host)
+        end
+        helper_method :current_site
+
+
+        private
+
+        def fail_unless_current_site_is_known
+          raise ActiveRecord::RecordNotFound unless current_site
+        end
+
+        def register_current_site_with_activerecord
+          ActiveRecord::Base.current_site = current_site
+        end
+      end
+    end
+  end
 end
+
+ApplicationController.extend Flogiston::Zoning::Controller

@@ -27,6 +27,18 @@ describe Site do
     end
   end
 
+  describe 'associations' do
+    it 'should have domains' do
+      @site.should respond_to(:domains)
+    end
+
+    it 'should allow retrieving domains' do
+      @site = Site.generate!
+      @domains = Array.new(3) { Domain.generate!(:site => @site) }
+      @site.domains.sort_by(&:id).should == @domains.sort_by(&:id)
+    end
+  end
+
   describe 'validations' do
     it 'should require a name' do
       site = Site.new(:name => nil)
@@ -62,6 +74,30 @@ describe Site do
       Site.generate!(:handle => 'duplicate handle')
       dup = Site.generate(:handle => 'duplicate handle')
       dup.errors.should be_invalid(:handle)
+    end
+  end
+
+  it 'should be able to retrieve a site for a given domain name' do
+    Site.should respond_to(:for_domain)
+  end
+
+  describe 'retrieving a site for a given domain name' do
+    it 'should accept a domain name' do
+      lambda { Site.for_domain('testing.co.il') }.should_not raise_error(ArgumentError)
+    end
+
+    it 'should require a domain name' do
+      lambda { Site.for_domain }.should raise_error(ArgumentError)
+    end
+
+    it 'should return the site for the given domain' do
+      domain = Domain.generate!
+      Site.for_domain(domain.name).should == domain.site
+    end
+
+    it 'should return nil if no such domain exists' do
+      Domain.delete_all
+      Site.for_domain('help.com').should be_nil
     end
   end
 end

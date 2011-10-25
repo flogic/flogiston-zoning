@@ -31,7 +31,7 @@ Dir[*paths].each do |f|
     extended = false
     lines.each do |l|
       if l.match(/^\s*class #{model_name} < Flogiston::#{model_name}/)
-        l << "  extend Flogiston::Zoning\n"
+        l << "  extend Flogiston::Zoning::Model\n"
         extended = true
         break
       end

@@ -67,4 +67,4 @@ module Flogiston::Zoning
   end
 end
 
-ApplicationController.extend Flogiston::Zoning::Controller
+[ApplicationController, AdminController].each { |c|  c.extend Flogiston::Zoning::Controller }
